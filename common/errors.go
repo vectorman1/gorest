@@ -11,26 +11,26 @@ var (
 )
 
 type HttpResponse struct {
-	code int
-	body interface{}
+	Code int
+	Body interface{}
 }
 
 func GetErrorResponse(err error) (int, HttpResponse) {
 	switch err {
 	case InvalidModelError:
 		return http.StatusBadRequest, HttpResponse{
-			code: http.StatusBadRequest,
-			body: err.Error(),
+			Code: http.StatusBadRequest,
+			Body: err.Error(),
 		}
 	case EntityNotFoundError:
 		return http.StatusNotFound, HttpResponse{
-			code: http.StatusNotFound,
-			body: err.Error(),
+			Code: http.StatusNotFound,
+			Body: err.Error(),
 		}
 	default:
 		return http.StatusInternalServerError, HttpResponse{
-			code: http.StatusInternalServerError,
-			body: err.Error(),
+			Code: http.StatusInternalServerError,
+			Body: err.Error(),
 		}
 	}
 }
