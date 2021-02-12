@@ -104,6 +104,7 @@ func (h *UserHandler) GetUsersCount(c echo.Context) error {
 	if err != nil {
 		return c.JSON(common.GetErrorResponse(err))
 	}
+
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -112,6 +113,7 @@ func (h *UserHandler) PostUsers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(common.GetErrorResponse(err))
 	}
+
 	var u entity.User
 	err = json.Unmarshal(bodyBytes, &u)
 	if err != nil {
@@ -137,6 +139,7 @@ func (h *UserHandler) PatchUsers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(common.GetErrorResponse(err))
 	}
+
 	var user entity.User
 	err = json.Unmarshal(bodyBytes, &user)
 	if err != nil {
@@ -158,9 +161,11 @@ func (h *UserHandler) DeleteUsers(c echo.Context) error {
 	if err != nil || id < 0 {
 		return c.JSON(common.GetErrorResponse(common.InvalidModelError))
 	}
+
 	err = h.Service.DeleteByID(uint(id))
 	if err != nil {
 		return c.JSON(common.GetErrorResponse(err))
 	}
+
 	return c.JSON(http.StatusNoContent, nil)
 }
