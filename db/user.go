@@ -35,16 +35,21 @@ type UserRepository struct {
 }
 
 func (r *UserRepository) FindAll() ([]entity.User, error) {
-	var e []entity.User
-	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	var res []entity.User
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Minute)
 	defer c()
 
-	err := r.db.WithContext(timeoutContext).Find(&e).Error
+	err := r.db.
+		Preload("Recipes").
+		WithContext(timeoutContext).
+		Find(&res).
+		Error
+
 	if err != nil {
-		return nil, common.EntityNotFoundError
+		return nil, err
 	}
 
-	return e, nil
+	return res, nil
 }
 
 func (r *UserRepository) FindAllPagedAndSorted(pageNumber int, pageSize int, sortingAttribute string, ascending bool) ([]entity.User, error) {
@@ -98,7 +103,7 @@ func (r *UserRepository) Create(user *entity.User) error {
 
 	err := r.db.WithContext(timeoutContext).Create(&user).Error
 	if err != nil {
-		return common.InvalidModelError
+		return err
 	}
 
 	return nil
@@ -110,23 +115,17 @@ func (r *UserRepository) Update(user *entity.User) error {
 
 	err := r.db.WithContext(timeoutContext).Save(&user).Error
 	if err != nil {
-		return common.InvalidModelError
+		return err
 	}
 
 	return nil
 }
 
 func (r *UserRepository) DeleteByID(userID uint) error {
-	e, err := r.FindByID(userID)
-	if err != nil {
-		return err
-	}
-
 	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
 	defer c()
 
-	e.Valid = false
-	err = r.db.WithContext(timeoutContext).Delete(&e).Error
+	err := r.db.WithContext(timeoutContext).Delete(userID).Error
 	if err != nil {
 		return common.EntityNotFoundError
 	}
