@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
+	"gorest/common"
 	"gorest/db"
 	"gorest/entity"
 )
@@ -58,6 +59,10 @@ func (r *UserService) Create(user *entity.User) error {
 	str := string(password)
 	user.Password = str
 
+	if user.AvatarUrl == "" {
+		user.AvatarUrl = common.DEFAULT_AVATAR_URL
+	}
+
 	return r.userRepository.Create(user)
 }
 
@@ -75,6 +80,10 @@ func (r *UserService) Update(user *entity.User) error {
 	if fail != nil {
 		newPass, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 		existingUser.Password = string(newPass)
+	}
+
+	if user.AvatarUrl == "" {
+		user.AvatarUrl = common.DEFAULT_AVATAR_URL
 	}
 
 	existingUser.Gender = user.Gender
