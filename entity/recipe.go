@@ -9,15 +9,15 @@ import (
 )
 
 type Recipe struct {
-	gorm.Model
-	UserID           uint
-	Title            string        `gorm:"not null; size:80"`
-	ShortDescription string        `gorm:"not null; size:256"`
-	TimeToCook       time.Duration `gorm:"not null"`
-	Products         Products      `gorm:"not null;type:text"`
-	ImageUrl         string        `gorm:"not null"`
-	Description      string        `gorm:"not null;size:2048"`
-	Tags             Tags          `gorm:"type:text"`
+	gorm.Model       `json:"omitEmpty"`
+	UserID           uint          `json:"user_id"`
+	Title            string        `gorm:"not null; size:80" json:"title"`
+	ShortDescription string        `gorm:"not null; size:256" json:"short_description"`
+	TimeToCookNs     time.Duration `gorm:"not null" json:"time_to_cook_ns"`
+	Products         Products      `gorm:"not null;type:text" json:"products"`
+	ImageUrl         string        `gorm:"not null" json:"image_url"`
+	Description      string        `gorm:"not null;size:2048" json:"description"`
+	Tags             Tags          `gorm:"type:text" json:"tags"`
 }
 
 type Products []string
