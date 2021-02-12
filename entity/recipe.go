@@ -3,21 +3,24 @@ package entity
 import (
 	"database/sql/driver"
 	"errors"
-	"gorm.io/gorm"
+	"github.com/go-sql-driver/mysql"
 	"strings"
 	"time"
 )
 
 type Recipe struct {
-	gorm.Model       `json:"omitEmpty"`
-	UserID           uint          `json:"user_id"`
-	Title            string        `gorm:"not null; size:80" json:"title"`
-	ShortDescription string        `gorm:"not null; size:256" json:"short_description"`
-	TimeToCookNs     time.Duration `gorm:"not null" json:"time_to_cook_ns"`
-	Products         Products      `gorm:"not null;type:text" json:"products"`
-	ImageUrl         string        `gorm:"not null" json:"image_url"`
-	Description      string        `gorm:"not null;size:2048" json:"description"`
-	Tags             Tags          `gorm:"type:text" json:"tags"`
+	ID               uint           `gorm:"primarykey" json:"id;omitEmpty"`
+	CreatedAt        time.Time      `json:"created_at;omitEmpty"`
+	UpdatedAt        time.Time      `json:"updated_at;omitEmpty"`
+	DeletedAt        mysql.NullTime `gorm:"index" json:"deleted_at;omitEmpty"`
+	UserID           uint           `gorm:"not null" json:"user_id"`
+	Title            string         `gorm:"not null; size:80" json:"title"`
+	ShortDescription string         `gorm:"not null; size:256" json:"short_description"`
+	TimeToCookNs     time.Duration  `gorm:"not null" json:"time_to_cook_ns"`
+	Products         Products       `gorm:"not null;type:text" json:"products"`
+	ImageUrl         string         `gorm:"not null" json:"image_url"`
+	Description      string         `gorm:"not null;size:2048" json:"description"`
+	Tags             Tags           `gorm:"type:text" json:"tags"`
 }
 
 type Products []string
