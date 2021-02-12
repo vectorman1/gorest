@@ -2,18 +2,17 @@ package entity
 
 import (
 	"database/sql/driver"
-	"errors"
+	"github.com/dystopia-systems/alaskalog"
 	"github.com/go-sql-driver/mysql"
 	"strings"
 	"time"
 )
 
 type Recipe struct {
-	ID               uint           `gorm:"primarykey" json:"id;omitEmpty"`
-	CreatedAt        time.Time      `json:"created_at;omitEmpty"`
-	UpdatedAt        time.Time      `json:"updated_at;omitEmpty"`
-	DeletedAt        mysql.NullTime `gorm:"index" json:"deleted_at;omitEmpty"`
-	UserID           uint           `gorm:"not null" json:"user_id"`
+	ID               uint           `gorm:"primarykey" json:"id"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+	DeletedAt        mysql.NullTime `gorm:"index" json:"deleted_at"`
 	Title            string         `gorm:"not null; size:80" json:"title"`
 	ShortDescription string         `gorm:"not null; size:256" json:"short_description"`
 	TimeToCookNs     time.Duration  `gorm:"not null" json:"time_to_cook_ns"`
@@ -21,17 +20,17 @@ type Recipe struct {
 	ImageUrl         string         `gorm:"not null" json:"image_url"`
 	Description      string         `gorm:"not null;size:2048" json:"description"`
 	Tags             Tags           `gorm:"type:text" json:"tags"`
+	User             User           `json:"-"`
+	UserID           uint           `gorm:"not null" json:"-"`
 }
 
 type Products []string
 type Tags []string
 
 func (p *Products) Scan(src interface{}) error {
-	str, ok := src.(string)
-	if !ok {
-		return errors.New("source is not string")
-	}
+	str, _ := src.(string)
 	*p = strings.Split(str, ",")
+	alaskalog.Logger.Println(*p)
 	return nil
 }
 
@@ -43,10 +42,7 @@ func (p Products) Value() (driver.Value, error) {
 }
 
 func (t *Tags) Scan(src interface{}) error {
-	str, ok := src.(string)
-	if !ok {
-		return errors.New("source is not string")
-	}
+	str, _ := src.(string)
 	*t = strings.Split(str, ",")
 	return nil
 }
