@@ -1,11 +1,11 @@
 package service
 
 import (
-	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorest/common"
 	"gorest/db"
 	"gorest/entity"
+	"reflect"
 )
 
 type User interface {
@@ -52,7 +52,7 @@ func (r *UserService) FindByUsername(username string) (entity.User, error) {
 
 func (r *UserService) Create(user *entity.User) error {
 	if len(user.Password) <= 8 {
-		return errors.New("password is too short")
+		return common.PasswordTooShortError
 	}
 
 	password, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
@@ -69,11 +69,11 @@ func (r *UserService) Create(user *entity.User) error {
 func (r *UserService) Update(user *entity.User) error {
 	existingUser, err := r.FindByID(user.ID)
 	if err != nil {
-		return err
+		return common.EntityNotFoundError
 	}
 
 	if existingUser.Username != user.Username {
-		return errors.New("can't change username")
+		return common.InvalidModelError
 	}
 
 	fail := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(user.Password))
@@ -86,19 +86,35 @@ func (r *UserService) Update(user *entity.User) error {
 		user.AvatarUrl = common.DEFAULT_AVATAR_URL
 	}
 
-	existingUser.Gender = user.Gender
-	existingUser.Role = user.Role
-	existingUser.AvatarUrl = user.AvatarUrl
-	existingUser.Description = user.Description
-	existingUser.Valid = user.Valid
-	existingUser.Recipes = user.Recipes
+	if existingUser.Gender != user.Gender {
+		existingUser.Gender = user.Gender
+	}
+	if existingUser.Role != user.Role {
+		existingUser.Role = user.Role
+	}
+	if existingUser.AvatarUrl != user.AvatarUrl {
+		existingUser.AvatarUrl = user.AvatarUrl
+	}
+	if existingUser.Description != user.Description {
+		existingUser.Description = user.Description
+	}
+	if existingUser.Valid != user.Valid {
+		existingUser.Valid = user.Valid
+	}
+	if !reflect.DeepEqual(existingUser.Recipes, user.Recipes) {
+		existingUser.Recipes = user.Recipes
+	}
 
 	return r.userRepository.Update(&existingUser)
 }
 
 func (r *UserService) DeleteByID(userID uint) error {
-	// TODO rework
-	return r.userRepository.DeleteByID(userID)
+	e, err := r.FindByID(userID)
+	if err != nil {
+		return common.EntityNotFoundError
+	}
+
+	return r.userRepository.DeleteByID(e.ID)
 }
 
 func (r *UserService) Count() (int, error) {
