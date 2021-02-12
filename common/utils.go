@@ -2,6 +2,8 @@ package common
 
 import (
 	"fmt"
+	"gorest/entity"
+	"sort"
 )
 
 func FormatOrderQuery(attr string, asc bool) string {
@@ -28,10 +30,23 @@ func Equal(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
 	}
+	sort.Strings(a)
+	sort.Strings(b)
 	for i, v := range a {
 		if v != b[i] {
 			return false
 		}
 	}
 	return true
+}
+
+func Unique(arr *[]entity.Recipe) []entity.Recipe {
+	m := make(map[uint]bool)
+	var result []entity.Recipe
+	for _, v := range *arr {
+		if !m[v.ID] {
+			result = append(result, v)
+		}
+	}
+	return result
 }

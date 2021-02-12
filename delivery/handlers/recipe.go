@@ -6,6 +6,7 @@ import (
 	"gorest/common"
 	"gorest/delivery"
 	"gorest/delivery/models"
+	"gorest/entity"
 	"gorest/service"
 	"io/ioutil"
 	"net/http"
@@ -36,7 +37,7 @@ func (h *RecipeHandler) GetRecipes(c echo.Context) error {
 	if !isPaged {
 		res, err := h.Service.FindAll()
 		if err != nil {
-			return c.JSON(http.StatusNotFound, nil)
+			return c.JSON(common.GetErrorResponse(err))
 		}
 
 		return c.JSON(http.StatusOK, res)
@@ -89,38 +90,104 @@ func (h *RecipeHandler) GetRecipesId(c echo.Context) error {
 func (h *RecipeHandler) PostRecipesSearch(c echo.Context) error {
 	bytes, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, nil)
+		return c.JSON(common.GetErrorResponse(err))
 	}
 
 	var request models.RecipesSearchRequest
 	err = json.Unmarshal(bytes, &request)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, nil)
+		return c.JSON(common.GetErrorResponse(err))
 	}
 
 	res, err := h.Service.Search(request)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, nil)
+		return c.JSON(common.GetErrorResponse(err))
 	}
 	return c.JSON(http.StatusOK, res)
 }
 
 func (h *RecipeHandler) PostRecipes(c echo.Context) error {
-	return nil
+	bytes, err := ioutil.ReadAll(c.Request().Body)
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	var recipe entity.Recipe
+	err = json.Unmarshal(bytes, &recipe)
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	err = h.Service.Create(&recipe)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, recipe)
 }
 
 func (h *RecipeHandler) PostRecipesBatch(c echo.Context) error {
-	return nil
+	bytes, err := ioutil.ReadAll(c.Request().Body)
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	var recipes []entity.Recipe
+	err = json.Unmarshal(bytes, &recipes)
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	err = h.Service.CreateBatch(&recipes)
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	return c.JSON(http.StatusOK, recipes)
 }
 
 func (h *RecipeHandler) PutRecipeId(c echo.Context) error {
-	return nil
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	bytes, err := ioutil.ReadAll(c.Request().Body)
+
+	var recipe entity.Recipe
+	err = json.Unmarshal(bytes, &recipe)
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+	recipe.ID = uint(id)
+
+	err = h.Service.Update(&recipe)
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	return c.JSON(http.StatusOK, &recipe)
 }
 
 func (h *RecipeHandler) DeleteRecipeId(c echo.Context) error {
-	return nil
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	res, err := h.Service.DeleteByID(uint(id))
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *RecipeHandler) GetRecipesCount(c echo.Context) error {
-	return nil
+	r, err := h.Service.Count()
+	if err != nil {
+		return c.JSON(common.GetErrorResponse(err))
+	}
+
+	return c.JSON(http.StatusOK, r)
 }

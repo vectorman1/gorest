@@ -72,7 +72,7 @@ func (r *UserService) Update(user *entity.User) error {
 		return common.EntityNotFoundError
 	}
 
-	if existingUser.Username != user.Username {
+	if user.Username != "" && existingUser.Username != user.Username {
 		return common.InvalidModelError
 	}
 
@@ -108,10 +108,10 @@ func (r *UserService) Update(user *entity.User) error {
 	return r.userRepository.Update(&existingUser)
 }
 
-func (r *UserService) DeleteByID(userID uint) error {
+func (r *UserService) DeleteByID(userID uint) (entity.User, error) {
 	e, err := r.FindByID(userID)
 	if err != nil {
-		return common.EntityNotFoundError
+		return entity.User{}, common.EntityNotFoundError
 	}
 
 	return r.userRepository.DeleteByID(e.ID)

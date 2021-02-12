@@ -101,27 +101,19 @@ func (r *RecipeRepository) FindAllByTitle(title string) ([]entity.Recipe, error)
 }
 
 func (r *RecipeRepository) FindAllByProducts(products *entity.Products) ([]entity.Recipe, error) {
-	var e []entity.Recipe
-	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
-	defer c()
-	err := r.db.
-		WithContext(timeoutContext).
-		Where("products <> ?", nil).
-		Find(&e).Error
+	e, err := r.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
 	var res []entity.Recipe
 	for _, r := range e {
-		for _, p := range *products {
-			if common.Contains(r.Products, p) {
-				res = append(res, r)
-			}
+		if common.Equal(r.Products, *products) {
+			res = append(res, r)
 		}
 	}
 	if len(res) == 0 {
-		return nil, errors.New("no recipes found")
+		return nil, common.EntityNotFoundError
 	}
 
 	return res, nil

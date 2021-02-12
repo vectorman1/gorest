@@ -1,10 +1,8 @@
 package entity
 
 import (
-	"database/sql/driver"
-	"github.com/dystopia-systems/alaskalog"
 	"github.com/go-sql-driver/mysql"
-	"strings"
+	"github.com/lib/pq"
 	"time"
 )
 
@@ -24,32 +22,5 @@ type Recipe struct {
 	UserID           uint           `gorm:"not null" json:"-"`
 }
 
-type Products []string
-type Tags []string
-
-func (p *Products) Scan(src interface{}) error {
-	str, _ := src.(string)
-	*p = strings.Split(str, ",")
-	alaskalog.Logger.Println(*p)
-	return nil
-}
-
-func (p Products) Value() (driver.Value, error) {
-	if p == nil || len(p) == 0 {
-		return nil, nil
-	}
-	return strings.Join(p, ","), nil
-}
-
-func (t *Tags) Scan(src interface{}) error {
-	str, _ := src.(string)
-	*t = strings.Split(str, ",")
-	return nil
-}
-
-func (t Tags) Value() (driver.Value, error) {
-	if t == nil || len(t) == 0 {
-		return nil, nil
-	}
-	return strings.Join(t, ","), nil
-}
+type Products pq.StringArray
+type Tags pq.StringArray

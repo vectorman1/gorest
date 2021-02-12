@@ -19,9 +19,8 @@ type User interface {
 	FindByUsername(username string) (entity.User, error)
 	Create(user *entity.User) error
 	Update(user *entity.User) error
-	DeleteByID(userID uint) error
+	DeleteByID(userID uint) (entity.User, error)
 	Count() (int, error)
-	Login(username string, password string) (entity.User, error)
 }
 
 func NewUserRepository(db *gorm.DB) *UserRepository {
@@ -121,16 +120,17 @@ func (r *UserRepository) Update(user *entity.User) error {
 	return nil
 }
 
-func (r *UserRepository) DeleteByID(userID uint) error {
+func (r *UserRepository) DeleteByID(userID uint) (entity.User, error) {
+	u, _ := r.FindByID(userID)
 	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
 	defer c()
 
 	err := r.db.WithContext(timeoutContext).Delete(userID).Error
 	if err != nil {
-		return common.EntityNotFoundError
+		return entity.User{}, common.EntityNotFoundError
 	}
 
-	return nil
+	return u, nil
 }
 
 func (r *UserRepository) Count() (int, error) {

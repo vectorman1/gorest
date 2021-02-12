@@ -1,6 +1,7 @@
 package service
 
 import (
+	"gorest/common"
 	"gorest/db"
 	"gorest/delivery/models"
 	"gorest/entity"
@@ -68,10 +69,19 @@ func (r *RecipeService) FindAllByTags(tags *entity.Tags) ([]entity.Recipe, error
 }
 
 func (r *RecipeService) Create(recipe *entity.Recipe) error {
+	if recipe.ImageUrl == "" {
+		recipe.ImageUrl = common.DEFAULT_AVATAR_URL
+	}
 	return r.recipeRepository.Create(recipe)
 }
 
 func (r *RecipeService) CreateBatch(recipes *[]entity.Recipe) error {
+	for _, v := range *recipes {
+		if v.ImageUrl == "" {
+			v.ImageUrl = common.DEFAULT_AVATAR_URL
+		}
+	}
+
 	return r.recipeRepository.CreateBatch(recipes)
 }
 
@@ -89,5 +99,26 @@ func (r *RecipeService) Count() (int, error) {
 
 // Service methods
 func (r *RecipeService) Search(req models.RecipesSearchRequest) ([]entity.Recipe, error) {
-	return nil, nil
+	var result []entity.Recipe
+	if req.Products != nil {
+		recipesByProducts, err := r.recipeRepository.FindAllByProducts(&req.Products)
+		if err == nil {
+			result = append(result, recipesByProducts...)
+		}
+	}
+	if req.Tags == nil {
+		recipesByTags, err := r.recipeRepository.FindAllByTags(&req.Tags)
+		if err == nil {
+			result = append(result, recipesByTags...)
+		}
+	}
+	if req.Title != "" {
+		recipesByTitle, err := r.recipeRepository.FindAllByTitle(req.Title)
+		if err == nil {
+			result = append(result, recipesByTitle...)
+		}
+	}
+
+	uniqueRes := common.Unique(&result)
+	return uniqueRes, nil
 }
