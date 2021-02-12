@@ -1,9 +1,11 @@
 package db
 
 import (
+	"context"
 	"gorest/common"
 	"gorest/entity"
 	"gorm.io/gorm"
+	"time"
 )
 
 type User interface {
@@ -34,10 +36,12 @@ type UserRepository struct {
 
 func (r *UserRepository) FindAll() ([]entity.User, error) {
 	var e []entity.User
-	err := r.db.Find(&e).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
 
+	err := r.db.WithContext(timeoutContext).Find(&e).Error
 	if err != nil {
-		return nil, err
+		return nil, common.EntityNotFoundError
 	}
 
 	return e, nil
@@ -45,15 +49,18 @@ func (r *UserRepository) FindAll() ([]entity.User, error) {
 
 func (r *UserRepository) FindAllPagedAndSorted(pageNumber int, pageSize int, sortingAttribute string, ascending bool) ([]entity.User, error) {
 	var e []entity.User
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
 	order := common.FormatOrderQuery(sortingAttribute, ascending)
-	err := r.db.
+	err := r.db.WithContext(timeoutContext).
 		Order(order).
 		Offset((pageNumber - 1) * pageSize).
 		Limit(pageSize).
 		Find(&e).
 		Error
 	if err != nil {
-		return nil, err
+		return nil, common.EntityNotFoundError
 	}
 
 	return e, nil
@@ -61,9 +68,12 @@ func (r *UserRepository) FindAllPagedAndSorted(pageNumber int, pageSize int, sor
 
 func (r *UserRepository) FindByID(id uint) (entity.User, error) {
 	var e entity.User
-	err := r.db.First(&e, id).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err := r.db.WithContext(timeoutContext).First(&e, id).Error
 	if err != nil {
-		return entity.User{}, err
+		return entity.User{}, common.EntityNotFoundError
 	}
 
 	return e, nil
@@ -71,26 +81,36 @@ func (r *UserRepository) FindByID(id uint) (entity.User, error) {
 
 func (r *UserRepository) FindByUsername(username string) (entity.User, error) {
 	var e entity.User
-	err := r.db.First(&e, "username = ?", username).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err := r.db.WithContext(timeoutContext).First(&e, "username = ?", username).Error
 	if err != nil {
-		return entity.User{}, err
+		return entity.User{}, common.EntityNotFoundError
 	}
 
 	return e, nil
 }
 
 func (r *UserRepository) Create(user *entity.User) error {
-	err := r.db.Create(&user).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err := r.db.WithContext(timeoutContext).Create(&user).Error
 	if err != nil {
-		return err
+		return common.InvalidModelError
 	}
+
 	return nil
 }
 
 func (r *UserRepository) Update(user *entity.User) error {
-	err := r.db.Save(user).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err := r.db.WithContext(timeoutContext).Save(&user).Error
 	if err != nil {
-		return err
+		return common.InvalidModelError
 	}
 
 	return nil
@@ -102,10 +122,13 @@ func (r *UserRepository) DeleteByID(userID uint) error {
 		return err
 	}
 
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
 	e.Valid = false
-	err = r.db.Delete(&e).Error
+	err = r.db.WithContext(timeoutContext).Delete(&e).Error
 	if err != nil {
-		return err
+		return common.EntityNotFoundError
 	}
 
 	return nil
@@ -114,7 +137,7 @@ func (r *UserRepository) DeleteByID(userID uint) error {
 func (r *UserRepository) Count() (int, error) {
 	e, err := r.FindAll()
 	if err != nil {
-		return 0, err
+		return 0, common.EntityNotFoundError
 	}
 
 	return len(e), nil

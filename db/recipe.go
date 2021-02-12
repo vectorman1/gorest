@@ -1,11 +1,13 @@
 package db
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"gorest/common"
 	"gorest/entity"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Recipe interface {
@@ -38,8 +40,10 @@ type RecipeRepository struct {
 
 func (r *RecipeRepository) FindAll() ([]entity.Recipe, error) {
 	var e []entity.Recipe
-	err := r.db.Find(&e).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
 
+	err := r.db.WithContext(timeoutContext).Find(&e).Error
 	if err != nil {
 		return nil, err
 	}
@@ -49,14 +53,17 @@ func (r *RecipeRepository) FindAll() ([]entity.Recipe, error) {
 
 func (r *RecipeRepository) FindAllPagedAndSorted(pageNumber int, pageSize int, sortingAttribute string, ascending bool) ([]entity.Recipe, error) {
 	var e []entity.Recipe
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
 	order := common.FormatOrderQuery(sortingAttribute, ascending)
 	err := r.db.
+		WithContext(timeoutContext).
 		Order(order).
 		Offset((pageNumber - 1) * pageSize).
 		Limit(pageSize).
 		Find(&e).
 		Error
-
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +73,10 @@ func (r *RecipeRepository) FindAllPagedAndSorted(pageNumber int, pageSize int, s
 
 func (r *RecipeRepository) FindByID(id uint) (entity.Recipe, error) {
 	var e entity.Recipe
-	err := r.db.First(&e, id).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err := r.db.WithContext(timeoutContext).First(&e, id).Error
 	if err != nil {
 		return entity.Recipe{}, err
 	}
@@ -76,7 +86,11 @@ func (r *RecipeRepository) FindByID(id uint) (entity.Recipe, error) {
 
 func (r *RecipeRepository) FindAllByTitle(title string) ([]entity.Recipe, error) {
 	var e []entity.Recipe
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
 	err := r.db.
+		WithContext(timeoutContext).
 		Where("title LIKE ?", fmt.Sprintf("%%%s%%", title)).
 		Error
 	if err != nil {
@@ -88,8 +102,12 @@ func (r *RecipeRepository) FindAllByTitle(title string) ([]entity.Recipe, error)
 
 func (r *RecipeRepository) FindAllByProducts(products *entity.Products) ([]entity.Recipe, error) {
 	var e []entity.Recipe
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
 	err := r.db.
-		Where("products <> ?", nil).Find(&e).Error
+		WithContext(timeoutContext).
+		Where("products <> ?", nil).
+		Find(&e).Error
 	if err != nil {
 		return nil, err
 	}
@@ -111,8 +129,13 @@ func (r *RecipeRepository) FindAllByProducts(products *entity.Products) ([]entit
 
 func (r *RecipeRepository) FindAllByTags(tags *entity.Tags) ([]entity.Recipe, error) {
 	var e []entity.Recipe
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
 	err := r.db.
-		Where("tags <> ?", nil).Find(&e).Error
+		WithContext(timeoutContext).
+		Where("tags <> ?", nil).
+		Find(&e).Error
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +156,10 @@ func (r *RecipeRepository) FindAllByTags(tags *entity.Tags) ([]entity.Recipe, er
 }
 
 func (r *RecipeRepository) Create(recipe *entity.Recipe) error {
-	err := r.db.Create(&recipe).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err := r.db.WithContext(timeoutContext).Create(&recipe).Error
 	if err != nil {
 		return err
 	}
@@ -142,7 +168,10 @@ func (r *RecipeRepository) Create(recipe *entity.Recipe) error {
 }
 
 func (r *RecipeRepository) CreateBatch(recipes *[]entity.Recipe) error {
-	err := r.db.CreateInBatches(&recipes, 20).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err := r.db.WithContext(timeoutContext).CreateInBatches(&recipes, 20).Error
 	if err != nil {
 		return err
 	}
@@ -156,7 +185,10 @@ func (r *RecipeRepository) Update(recipe *entity.Recipe) error {
 		return err
 	}
 
-	err = r.db.Save(&recipe).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err = r.db.WithContext(timeoutContext).Save(&recipe).Error
 	if err != nil {
 		return err
 	}
@@ -170,7 +202,10 @@ func (r *RecipeRepository) DeleteByID(recipeID uint) (entity.Recipe, error) {
 		return entity.Recipe{}, err
 	}
 
-	err = r.db.Delete(&e).Error
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	err = r.db.WithContext(timeoutContext).Delete(&e).Error
 	if err != nil {
 		return entity.Recipe{}, err
 	}
