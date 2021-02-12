@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/dystopia-systems/alaskalog v0.2.0
 	github.com/fatih/color v1.10.0
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/rodaine/table v1.0.1
