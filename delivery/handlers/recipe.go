@@ -123,7 +123,7 @@ func (h *RecipeHandler) PostRecipes(c echo.Context) error {
 		return c.JSON(common.GetErrorResponse(err))
 	}
 
-	return c.JSON(http.StatusOK, recipe)
+	return c.JSON(http.StatusCreated, recipe)
 }
 
 func (h *RecipeHandler) PostRecipesBatch(c echo.Context) error {
@@ -143,7 +143,7 @@ func (h *RecipeHandler) PostRecipesBatch(c echo.Context) error {
 		return c.JSON(common.GetErrorResponse(err))
 	}
 
-	return c.JSON(http.StatusOK, recipes)
+	return c.JSON(http.StatusCreated, recipes)
 }
 
 func (h *RecipeHandler) PutRecipeId(c echo.Context) error {

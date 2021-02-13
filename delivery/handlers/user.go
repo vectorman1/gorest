@@ -125,7 +125,7 @@ func (h *UserHandler) PostUsers(c echo.Context) error {
 		return c.JSON(common.GetErrorResponse(err))
 	}
 
-	return c.JSON(http.StatusOK, &u)
+	return c.JSON(http.StatusCreated, &u)
 }
 
 func (h *UserHandler) PatchUsers(c echo.Context) error {
