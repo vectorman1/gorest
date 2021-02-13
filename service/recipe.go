@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/lib/pq"
 	"gorest/common"
 	"gorest/db"
 	"gorest/delivery/models"
@@ -60,11 +61,11 @@ func (r *RecipeService) FindAllByTitle(title string) ([]entity.Recipe, error) {
 	return r.recipeRepository.FindAllByTitle(title)
 }
 
-func (r *RecipeService) FindAllByProducts(products *entity.Products) ([]entity.Recipe, error) {
+func (r *RecipeService) FindAllByProducts(products *pq.StringArray) ([]entity.Recipe, error) {
 	return r.recipeRepository.FindAllByProducts(products)
 }
 
-func (r *RecipeService) FindAllByTags(tags *entity.Tags) ([]entity.Recipe, error) {
+func (r *RecipeService) FindAllByTags(tags *pq.StringArray) ([]entity.Recipe, error) {
 	return r.recipeRepository.FindAllByTags(tags)
 }
 
@@ -101,24 +102,27 @@ func (r *RecipeService) Count() (int, error) {
 func (r *RecipeService) Search(req models.RecipesSearchRequest) ([]entity.Recipe, error) {
 	var result []entity.Recipe
 	if req.Products != nil {
-		recipesByProducts, err := r.recipeRepository.FindAllByProducts(&req.Products)
-		if err == nil {
+		recipesByProducts, _ := r.recipeRepository.FindAllByProducts(&req.Products)
+		if recipesByProducts != nil {
 			result = append(result, recipesByProducts...)
 		}
 	}
-	if req.Tags == nil {
-		recipesByTags, err := r.recipeRepository.FindAllByTags(&req.Tags)
-		if err == nil {
+	if req.Tags != nil {
+		recipesByTags, _ := r.recipeRepository.FindAllByTags(&req.Tags)
+		if recipesByTags != nil {
 			result = append(result, recipesByTags...)
 		}
 	}
 	if req.Title != "" {
-		recipesByTitle, err := r.recipeRepository.FindAllByTitle(req.Title)
-		if err == nil {
+		recipesByTitle, _ := r.recipeRepository.FindAllByTitle(req.Title)
+		if recipesByTitle != nil {
 			result = append(result, recipesByTitle...)
 		}
 	}
 
 	uniqueRes := common.Unique(&result)
+	if len(uniqueRes) == 0 {
+		return nil, common.EntityNotFoundError
+	}
 	return uniqueRes, nil
 }
