@@ -9,6 +9,7 @@ import (
 const DUPLICATE_ENTRY = 1062
 const DATA_TOO_LONG = 1406
 const CANNOT_BE_NULL = 1048
+const FOREIGN_KEY_CONSTRAINT_FAILED = 1452
 
 var (
 	InvalidModelError     = errors.New("invalid model")
@@ -25,6 +26,11 @@ type HttpResponse struct {
 }
 
 func GetErrorResponse(err error) (int, HttpResponse) {
+	me, ok := err.(*mysql.MySQLError)
+	if ok {
+		err = ParseMySQLError(me)
+	}
+
 	switch err {
 	case InvalidModelError:
 		return http.StatusBadRequest, HttpResponse{
@@ -36,33 +42,22 @@ func GetErrorResponse(err error) (int, HttpResponse) {
 			Code: http.StatusNotFound,
 			Body: err.Error(),
 		}
-	default:
-		me, ok := err.(*mysql.MySQLError)
-		if ok {
-			domainErr := ParseMySQLError(me)
-			switch domainErr {
-			case DuplicateEntityError:
-				return http.StatusBadRequest, HttpResponse{
-					Code: http.StatusBadRequest,
-					Body: domainErr.Error(),
-				}
-			case DataTooLongError:
-				return http.StatusBadRequest, HttpResponse{
-					Code: http.StatusBadRequest,
-					Body: domainErr.Error(),
-				}
-			case CannotBeNullError:
-				return http.StatusBadRequest, HttpResponse{
-					Code: http.StatusBadRequest,
-					Body: domainErr.Error(),
-				}
-			default:
-				return http.StatusInternalServerError, HttpResponse{
-					Code: http.StatusInternalServerError,
-					Body: domainErr.Error(),
-				}
-			}
+	case DuplicateEntityError:
+		return http.StatusBadRequest, HttpResponse{
+			Code: http.StatusBadRequest,
+			Body: err.Error(),
 		}
+	case DataTooLongError:
+		return http.StatusBadRequest, HttpResponse{
+			Code: http.StatusBadRequest,
+			Body: err.Error(),
+		}
+	case CannotBeNullError:
+		return http.StatusBadRequest, HttpResponse{
+			Code: http.StatusBadRequest,
+			Body: err.Error(),
+		}
+	default:
 		return http.StatusInternalServerError, HttpResponse{
 			Code: http.StatusInternalServerError,
 			Body: err.Error(),
@@ -78,6 +73,8 @@ func ParseMySQLError(sqlError *mysql.MySQLError) error {
 		return DataTooLongError
 	case CANNOT_BE_NULL:
 		return CannotBeNullError
+	case FOREIGN_KEY_CONSTRAINT_FAILED:
+		return InvalidModelError
 	default:
 		return sqlError
 	}
