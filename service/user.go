@@ -71,6 +71,7 @@ func (r *UserService) Update(user *entity.User) error {
 	if err != nil {
 		return common.EntityNotFoundError
 	}
+	user.CreatedAt = existingUser.CreatedAt
 
 	if user.Description == "" {
 		user.Description = existingUser.Description
