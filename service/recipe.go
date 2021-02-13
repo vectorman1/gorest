@@ -50,7 +50,7 @@ func (r *RecipeService) FindAll() ([]entity.Recipe, error) {
 }
 
 func (r *RecipeService) FindAllPagedAndSorted(pageNumber int, pageSize int, sortingAttribute string, ascending bool) ([]entity.Recipe, error) {
-	return r.recipeRepository.FindAllPagedAndSorted(pageSize, pageSize, sortingAttribute, ascending)
+	return r.recipeRepository.FindAllPagedAndSorted(pageNumber, pageSize, sortingAttribute, ascending)
 }
 
 func (r *RecipeService) FindByID(id uint) (entity.Recipe, error) {
