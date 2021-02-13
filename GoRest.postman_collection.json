@@ -1,0 +1,381 @@
+{
+	"info": {
+		"_postman_id": "cf073d3e-417e-4949-a8b9-4bb00f772dba",
+		"name": "GoRest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All /users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Paged /users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/users?isPaged=true&pageSize=1&pageNumber=1&order=username&asc=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "isPaged",
+									"value": "true"
+								},
+								{
+									"key": "pageSize",
+									"value": "1"
+								},
+								{
+									"key": "pageNumber",
+									"value": "1"
+								},
+								{
+									"key": "order",
+									"value": "username"
+								},
+								{
+									"key": "asc",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get /users/{id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search by username /users/search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/users/search?username=test",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "test"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Count /users/count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/users/count",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update /users/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Gender\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create /users",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"testusername1\",\r\n    \"password\": \"testpassword1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete by ID /users/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recipes",
+			"item": [
+				{
+					"name": "Get All /recipes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/recipes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Paged /recipes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/recipes?isPaged=true&pageSize=2&pageNumber=1&order=title&asc=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes"
+							],
+							"query": [
+								{
+									"key": "isPaged",
+									"value": "true"
+								},
+								{
+									"key": "pageSize",
+									"value": "2"
+								},
+								{
+									"key": "pageNumber",
+									"value": "1"
+								},
+								{
+									"key": "order",
+									"value": "title"
+								},
+								{
+									"key": "asc",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get /recipes/{id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9001/recipes/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get /recipes/search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get /recipes/count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create /recipes/batch",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " [\r\n    {\r\n        \"title\": \"3. djadhkjahdjahdkjadjadhkjahdjahdkjadjadhkjahdjahdkjadjadhkj\",\r\n        \"short_description\": \"Short description of my recipe.\",\r\n        \"time_to_cook_ns\": 900000,\r\n        \"products\" : [\r\n            \"Egg\",\r\n            \"Flour\",\r\n            \"Milk\"\r\n        ],\r\n        \"image_url\" : \"https://google.com\",\r\n        \"description\" : \"Long long Long Long Long Long Long  description of my recipe\",\r\n        \"tags\": [\r\n            \"baking\",\r\n            \"easy\",\r\n            \"quick\"\r\n        ]\r\n    },\r\n    {\r\n        \"title\": \"4. djadhkjahdjahdkjadjadhkjahdjahdkjadjadhkjahdjahdkjadjadhkj\",\r\n        \"short_description\": \"Short description of my recipe.\",\r\n        \"time_to_cook_ns\": 900000,\r\n        \"products\" : [\r\n            \"Egg\",\r\n            \"Flour\",\r\n            \"Milk\"\r\n        ],\r\n        \"image_url\" : \"https://google.com\",\r\n        \"description\" : \"Long long Long Long Long Long Long  description of my recipe\",\r\n        \"tags\": [\r\n            \"baking\",\r\n            \"easy\",\r\n            \"quick\"\r\n        ]\r\n    },\r\n    {\r\n        \"title\": \"8. djadhkjahdjahdkjadjadhkjahdjahdkjadjadhkjahdjahdkjadjadhkj\",\r\n        \"short_description\": \"Short description of my recipe.\",\r\n        \"time_to_cook_ns\": 900000,\r\n        \"products\" : [\r\n            \"Egg\",\r\n            \"Flour\",\r\n            \"Milk\"\r\n        ],\r\n        \"image_url\" : \"https://google.com\",\r\n        \"description\" : \"Long long Long Long Long Long Long  description of my recipe\",\r\n        \"tags\": [\r\n            \"baking\",\r\n            \"easy\",\r\n            \"quick\"\r\n        ]\r\n    },\r\n    {\r\n        \"title\": \"43 4djadhkjahdjahdkjadjadhkjahdjahdkjadjadhkjahdjahdkjadjadhkj\",\r\n        \"short_description\": \"Short description of my recipe.\",\r\n        \"time_to_cook_ns\": 900000,\r\n        \"products\" : [\r\n            \"Egg\",\r\n            \"Flour\",\r\n            \"Milk\"\r\n        ],\r\n        \"image_url\" : \"https://google.com\",\r\n        \"description\" : \"Long long Long Long Long Long Long  description of my recipe\",\r\n        \"tags\": [\r\n            \"baking\",\r\n            \"easy\",\r\n            \"quick\"\r\n        ]\r\n    },\r\n    {\r\n        \"title\": \"dajdkajdlw a\",\r\n        \"short_description\": \"Short description of my recipe.\",\r\n        \"time_to_cook_ns\": 900000,\r\n        \"products\" : [\r\n            \"Egg\",\r\n            \"Red Bull\",\r\n            \"Butter\"\r\n        ],\r\n        \"image_url\" : \"https://google.com\",\r\n        \"description\" : \"Long long Long Long Long Long Long  description of my recipe\",\r\n        \"tags\": [\r\n            \"baking\",\r\n            \"easy\",\r\n            \"quick\"\r\n        ]\r\n    },\r\n    {\r\n        \"title\": \"dajskdajlkdjak2 23 ii2u \",\r\n        \"short_description\": \"Short description of my recipe.\",\r\n        \"time_to_cook_ns\": 900000,\r\n        \"products\" : [\r\n            \"Egg\",\r\n            \"Flour\",\r\n            \"Milk\"\r\n        ],\r\n        \"image_url\" : \"https://google.com\",\r\n        \"description\" : \"Long long Long Long Long Long Long  description of my recipe\",\r\n        \"tags\": [\r\n            \"baking\",\r\n            \"easy\",\r\n            \"quick\"\r\n        ]\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/recipes/batch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes",
+								"batch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create /recipes",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"dajskdajlkdjak2 23 ii2u \",\r\n    \"short_description\": \"Short description of my recipe.\",\r\n    \"time_to_cook_ns\": 900000,\r\n    \"products\" : [\r\n        \"Egg\",\r\n        \"Flour\",\r\n        \"Milk\"\r\n    ],\r\n    \"image_url\" : \"https://google.com\",\r\n    \"description\" : \"Long long Long Long Long Long Long  description of my recipe\",\r\n    \"tags\": [\r\n        \"baking\",\r\n        \"easy\",\r\n        \"quick\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9001/recipes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9001",
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
