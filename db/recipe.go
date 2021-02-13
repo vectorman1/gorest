@@ -2,8 +2,7 @@ package db
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	"github.com/lib/pq"
 	"gorest/common"
 	"gorest/entity"
 	"gorm.io/gorm"
@@ -78,7 +77,7 @@ func (r *RecipeRepository) FindByID(id uint) (entity.Recipe, error) {
 
 	err := r.db.WithContext(timeoutContext).First(&e, id).Error
 	if err != nil {
-		return entity.Recipe{}, err
+		return entity.Recipe{}, common.EntityNotFoundError
 	}
 
 	return e, nil
@@ -91,7 +90,8 @@ func (r *RecipeRepository) FindAllByTitle(title string) ([]entity.Recipe, error)
 
 	err := r.db.
 		WithContext(timeoutContext).
-		Where("title LIKE ?", fmt.Sprintf("%%%s%%", title)).
+		Where("title LIKE ?", "%"+title+"%").
+		Find(&e).
 		Error
 	if err != nil {
 		return nil, err
@@ -100,50 +100,41 @@ func (r *RecipeRepository) FindAllByTitle(title string) ([]entity.Recipe, error)
 	return e, nil
 }
 
-func (r *RecipeRepository) FindAllByProducts(products *entity.Products) ([]entity.Recipe, error) {
-	e, err := r.FindAll()
+func (r *RecipeRepository) FindAllByProducts(products *pq.StringArray) ([]entity.Recipe, error) {
+	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
+	defer c()
+
+	var res []entity.Recipe
+	err := r.db.
+		WithContext(timeoutContext).
+		Where("products = ?", pq.Array(*products)).
+		Find(&res).Error
 	if err != nil {
 		return nil, err
 	}
 
-	var res []entity.Recipe
-	for _, r := range e {
-		if common.Equal(r.Products, *products) {
-			res = append(res, r)
-		}
-	}
 	if len(res) == 0 {
 		return nil, common.EntityNotFoundError
 	}
-
 	return res, nil
 }
 
-func (r *RecipeRepository) FindAllByTags(tags *entity.Tags) ([]entity.Recipe, error) {
-	var e []entity.Recipe
+func (r *RecipeRepository) FindAllByTags(tags *pq.StringArray) ([]entity.Recipe, error) {
+	var res []entity.Recipe
 	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
 	defer c()
 
 	err := r.db.
 		WithContext(timeoutContext).
-		Where("tags <> ?", nil).
-		Find(&e).Error
+		Where("tags = ?", pq.Array(*tags)).
+		Find(&res).Error
 	if err != nil {
 		return nil, err
 	}
 
-	var res []entity.Recipe
-	for _, r := range e {
-		for _, t := range *tags {
-			if common.Contains(r.Tags, t) {
-				res = append(res, r)
-			}
-		}
-	}
 	if len(res) == 0 {
-		return nil, errors.New("no recipes found")
+		return nil, common.EntityNotFoundError
 	}
-
 	return res, nil
 }
 
