@@ -14,12 +14,11 @@ type Recipe struct {
 	Title            string         `gorm:"not null; size:80" json:"title"`
 	ShortDescription string         `gorm:"not null; size:256" json:"short_description"`
 	TimeToCookNs     time.Duration  `gorm:"not null" json:"time_to_cook_ns"`
-	Products         Products       `gorm:"not null;type:text" json:"products"`
+	Products         Products       `gorm:"not null;type:text[]" json:"products"`
 	ImageUrl         string         `gorm:"not null" json:"image_url"`
 	Description      string         `gorm:"not null;size:2048" json:"description"`
-	Tags             Tags           `gorm:"type:text" json:"tags"`
-	User             User           `json:"-"`
-	UserID           uint           `gorm:"not null" json:"-"`
+	Tags             Tags           `gorm:"type:text[]" json:"tags"`
+	UserID           uint           `gorm:"not null" json:"user_id"`
 }
 
 type Products pq.StringArray

@@ -5,7 +5,6 @@ import (
 	"gorest/common"
 	"gorest/db"
 	"gorest/entity"
-	"reflect"
 )
 
 type User interface {
@@ -100,9 +99,6 @@ func (r *UserService) Update(user *entity.User) error {
 	}
 	if existingUser.Valid != user.Valid {
 		existingUser.Valid = user.Valid
-	}
-	if !reflect.DeepEqual(existingUser.Recipes, user.Recipes) {
-		existingUser.Recipes = user.Recipes
 	}
 
 	return r.userRepository.Update(&existingUser)

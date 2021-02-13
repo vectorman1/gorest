@@ -20,7 +20,6 @@ type User struct {
 	AvatarUrl   string       `gorm:"not null" json:"avatar_url"`
 	Description string       `gorm:"not null;size:512" json:"description"`
 	Valid       bool         `gorm:"not null" json:"valid"`
-	Recipes     Recipes      `gorm:"ForeignKey:UserID" json:"recipes"`
 }
 
 type Recipes []Recipe

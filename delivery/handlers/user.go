@@ -162,10 +162,10 @@ func (h *UserHandler) DeleteUsers(c echo.Context) error {
 		return c.JSON(common.GetErrorResponse(common.InvalidModelError))
 	}
 
-	err = h.Service.DeleteByID(uint(id))
+	r, err := h.Service.DeleteByID(uint(id))
 	if err != nil {
 		return c.JSON(common.GetErrorResponse(err))
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.JSON(http.StatusNoContent, r)
 }

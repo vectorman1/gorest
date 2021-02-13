@@ -27,7 +27,7 @@ func NewRecipeHandler(e *echo.Echo, service *service.RecipeService) {
 	e.POST(delivery.Recipes, handler.PostRecipes)
 	e.POST(delivery.RecipesBatch, handler.PostRecipesBatch)
 	e.PUT(delivery.RecipesId, handler.PutRecipeId)
-	e.DELETE(delivery.RecipesId, handler.DeleteRecipeId)
+	e.DELETE(delivery.RecipesId, handler.DeleteRecipesId)
 	e.GET(delivery.RecipesCount, handler.GetRecipesCount)
 }
 
@@ -169,7 +169,7 @@ func (h *RecipeHandler) PutRecipeId(c echo.Context) error {
 	return c.JSON(http.StatusOK, &recipe)
 }
 
-func (h *RecipeHandler) DeleteRecipeId(c echo.Context) error {
+func (h *RecipeHandler) DeleteRecipesId(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(common.GetErrorResponse(err))
