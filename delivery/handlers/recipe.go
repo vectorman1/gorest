@@ -67,7 +67,7 @@ func (h *RecipeHandler) GetRecipes(c echo.Context) error {
 	res, err := h.Service.
 		FindAllPagedAndSorted(pageNumber, pageSize, orderQ, asc)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, nil)
+		return c.JSON(common.GetErrorResponse(err))
 	}
 
 	return c.JSON(http.StatusOK, res)
@@ -76,12 +76,12 @@ func (h *RecipeHandler) GetRecipes(c echo.Context) error {
 func (h *RecipeHandler) GetRecipesId(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id < 0 {
-		return c.JSON(http.StatusBadRequest, nil)
+		return c.JSON(common.GetErrorResponse(err))
 	}
 
 	res, err := h.Service.FindByID(uint(id))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, nil)
+		return c.JSON(common.GetErrorResponse(err))
 	}
 
 	return c.JSON(http.StatusOK, res)
@@ -120,7 +120,7 @@ func (h *RecipeHandler) PostRecipes(c echo.Context) error {
 
 	err = h.Service.Create(&recipe)
 	if err != nil {
-		return err
+		return c.JSON(common.GetErrorResponse(err))
 	}
 
 	return c.JSON(http.StatusOK, recipe)
@@ -149,7 +149,7 @@ func (h *RecipeHandler) PostRecipesBatch(c echo.Context) error {
 func (h *RecipeHandler) PutRecipeId(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(common.GetErrorResponse(err))
+		return c.JSON(common.GetErrorResponse(common.InvalidModelError))
 	}
 
 	bytes, err := ioutil.ReadAll(c.Request().Body)
@@ -157,7 +157,7 @@ func (h *RecipeHandler) PutRecipeId(c echo.Context) error {
 	var recipe entity.Recipe
 	err = json.Unmarshal(bytes, &recipe)
 	if err != nil {
-		return c.JSON(common.GetErrorResponse(err))
+		return c.JSON(common.GetErrorResponse(common.InvalidModelError))
 	}
 	recipe.ID = uint(id)
 
