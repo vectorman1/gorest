@@ -1,9 +1,11 @@
 package models
 
-import "gorest/entity"
+import (
+	"github.com/lib/pq"
+)
 
 type RecipesSearchRequest struct {
 	Title    string
-	Products entity.Products
-	Tags     entity.Tags
+	Products pq.StringArray
+	Tags     pq.StringArray
 }
