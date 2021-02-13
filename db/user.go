@@ -57,7 +57,9 @@ func (r *UserRepository) FindAllPagedAndSorted(pageNumber int, pageSize int, sor
 	defer c()
 
 	order := common.FormatOrderQuery(sortingAttribute, ascending)
-	err := r.db.WithContext(timeoutContext).
+	err := r.db.
+		WithContext(timeoutContext).
+		Preload("Recipes").
 		Order(order).
 		Offset((pageNumber - 1) * pageSize).
 		Limit(pageSize).
@@ -75,7 +77,10 @@ func (r *UserRepository) FindByID(id uint) (entity.User, error) {
 	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
 	defer c()
 
-	err := r.db.WithContext(timeoutContext).First(&e, id).Error
+	err := r.db.
+		WithContext(timeoutContext).
+		Preload("Recipes").
+		First(&e, id).Error
 	if err != nil {
 		return entity.User{}, common.EntityNotFoundError
 	}
@@ -88,7 +93,10 @@ func (r *UserRepository) FindByUsername(username string) (entity.User, error) {
 	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
 	defer c()
 
-	err := r.db.WithContext(timeoutContext).First(&e, "username = ?", username).Error
+	err := r.db.
+		WithContext(timeoutContext).
+		Preload("Recipes").
+		First(&e, "username = ?", username).Error
 	if err != nil {
 		return entity.User{}, common.EntityNotFoundError
 	}
@@ -112,7 +120,18 @@ func (r *UserRepository) Update(user *entity.User) error {
 	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
 	defer c()
 
-	err := r.db.WithContext(timeoutContext).Save(&user).Error
+	err := r.db.
+		WithContext(timeoutContext).
+		Save(&user).Error
+	if err != nil {
+		return err
+	}
+
+	res := &entity.User{ID: user.ID}
+	err = r.db.
+		WithContext(timeoutContext).
+		Find(&res).
+		Error
 	if err != nil {
 		return err
 	}
@@ -125,7 +144,10 @@ func (r *UserRepository) DeleteByID(userID uint) (entity.User, error) {
 	timeoutContext, c := context.WithTimeout(context.Background(), time.Second)
 	defer c()
 
-	err := r.db.WithContext(timeoutContext).Delete(userID).Error
+	err := r.db.
+		WithContext(timeoutContext).
+		Delete(entity.User{ID: userID}).
+		Error
 	if err != nil {
 		return entity.User{}, common.EntityNotFoundError
 	}
