@@ -57,6 +57,7 @@ func (r *UserService) Create(user *entity.User) error {
 	password, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	str := string(password)
 	user.Password = str
+	user.Valid = true
 
 	if user.AvatarUrl == "" {
 		user.AvatarUrl = common.DEFAULT_AVATAR_URL
@@ -71,37 +72,33 @@ func (r *UserService) Update(user *entity.User) error {
 		return common.EntityNotFoundError
 	}
 
-	if user.Username != "" && existingUser.Username != user.Username {
+	if user.Description == "" {
+		user.Description = existingUser.Description
+	}
+	if user.AvatarUrl == "" {
+		user.AvatarUrl = existingUser.AvatarUrl
+	}
+	if user.Role == "" {
+		user.Role = existingUser.Role
+	}
+	if user.Username == "" {
+		user.Username = existingUser.Username
+	} else if user.Username != "" && existingUser.Username != user.Username {
 		return common.InvalidModelError
 	}
-
-	fail := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(user.Password))
-	if fail != nil {
-		newPass, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
-		existingUser.Password = string(newPass)
+	if user.Password == "" {
+		user.Password = existingUser.Password
+	} else {
+		fail := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(user.Password))
+		if fail != nil {
+			newPass, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+			user.Password = string(newPass)
+		} else {
+			user.Password = existingUser.Password
+		}
 	}
 
-	if user.AvatarUrl == "" {
-		user.AvatarUrl = common.DEFAULT_AVATAR_URL
-	}
-
-	if existingUser.Gender != user.Gender {
-		existingUser.Gender = user.Gender
-	}
-	if existingUser.Role != user.Role {
-		existingUser.Role = user.Role
-	}
-	if existingUser.AvatarUrl != user.AvatarUrl {
-		existingUser.AvatarUrl = user.AvatarUrl
-	}
-	if existingUser.Description != user.Description {
-		existingUser.Description = user.Description
-	}
-	if existingUser.Valid != user.Valid {
-		existingUser.Valid = user.Valid
-	}
-
-	return r.userRepository.Update(&existingUser)
+	return r.userRepository.Update(user)
 }
 
 func (r *UserService) DeleteByID(userID uint) (entity.User, error) {
