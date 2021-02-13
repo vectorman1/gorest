@@ -66,6 +66,9 @@ func (h *UserHandler) GetUsers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(common.GetErrorResponse(err))
 	}
+	if len(res) == 0 {
+		return c.JSON(common.GetErrorResponse(common.EntityNotFoundError))
+	}
 
 	return c.JSON(http.StatusOK, res)
 }

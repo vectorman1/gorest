@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"github.com/go-sql-driver/mysql"
 	"github.com/lib/pq"
 	"time"
 )
@@ -10,7 +9,6 @@ type Recipe struct {
 	ID               uint           `gorm:"primarykey" json:"id"`
 	CreatedAt        time.Time      `json:"created_at"`
 	UpdatedAt        time.Time      `json:"updated_at"`
-	DeletedAt        mysql.NullTime `gorm:"index" json:"deleted_at"`
 	Title            string         `gorm:"not null; size:80" json:"title"`
 	ShortDescription string         `gorm:"not null; size:256" json:"short_description"`
 	TimeToCookNs     time.Duration  `gorm:"not null" json:"time_to_cook_ns"`
